@@ -91,7 +91,7 @@ class MSFormViewController: UITableViewController {
 
         case 2:
             
-            let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number", "^[0-9]{10,11}$"), textChanged: { (text) in
+            let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
