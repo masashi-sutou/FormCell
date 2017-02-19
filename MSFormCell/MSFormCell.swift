@@ -26,45 +26,50 @@ private extension Selector {
 final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
 
     public var textField: UITextField!
+
+    // No error is true.
+    // When isOptional is ture, default is true.
+    public var isValid: Bool = false
  
     private var beginEditing: (() -> Void)?
     private var textChanged: ((String) -> Void)!
     private var didReturn: (() -> Void)!
     
     private var maxTextCount: Int = 0
-    private var isMust: Bool = true
+    private var isOptional: Bool = false
     private var currentLengthLabel: UILabel!
     private var errorMessageLabel: UILabel!
     private var pregError: (message: String, pattern: String)?
 
-    public init(maxTextCount: Int = 0, isMust: Bool = true, pregError:(message: String, pattern: String)? = nil, textChanged: @escaping (String) -> Void, didReturn: @escaping () -> Void) {
+    public init(maxTextCount: Int = 0, isOptional: Bool = false, pregError:(message: String, pattern: String)? = nil, textChanged: @escaping (String) -> Void, didReturn: @escaping () -> Void) {
         
         super.init(style: .default, reuseIdentifier: "MSFormCell")
         self.beginEditing = nil
         self.textChanged = textChanged
         self.didReturn = didReturn
         
-        self.setup(maxTextCount: maxTextCount, isMust: isMust, pregError: pregError)
+        self.setup(maxTextCount: maxTextCount, isOptional: isOptional, pregError: pregError)
     }
     
-    public init(maxTextCount: Int = 0, isMust: Bool = true, pregError:(message: String, pattern: String)? = nil, beginEditing: @escaping () -> Void, textChanged: @escaping (String) -> Void, didReturn: @escaping () -> Void) {
+    public init(maxTextCount: Int = 0, isOptional: Bool = false, pregError:(message: String, pattern: String)? = nil, beginEditing: @escaping () -> Void, textChanged: @escaping (String) -> Void, didReturn: @escaping () -> Void) {
 
         super.init(style: .default, reuseIdentifier: "MSFormCell")
         self.beginEditing = beginEditing
         self.textChanged = textChanged
         self.didReturn = didReturn
         
-        self.setup(maxTextCount: maxTextCount, isMust: isMust, pregError: pregError)
+        self.setup(maxTextCount: maxTextCount, isOptional: isOptional, pregError: pregError)
     }
     
-    private func setup(maxTextCount: Int, isMust: Bool, pregError:(message: String, pattern: String)?) {
+    private func setup(maxTextCount: Int, isOptional: Bool, pregError:(message: String, pattern: String)?) {
         
         self.selectionStyle = .none
         self.accessoryType = .none
         
         self.maxTextCount = maxTextCount
         self.pregError = pregError
-        self.isMust = isMust
+        self.isOptional = isOptional
+        self.isValid = isOptional
         
         self.textField = UITextField(frame: .zero)
         self.textField.clearButtonMode = .whileEditing
@@ -133,7 +138,7 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     public func textFieldDidEndEditing(_ textField: UITextField) {
         
         guard let text: String = textField.text else { return }
-        self.showLabel(text: text)
+        self.showLabels(text: text)
     }
     
     public func textFieldShouldClear(_ textField: UITextField) -> Bool {
@@ -149,7 +154,7 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
             return true
         }
 
-        self.showLabel(text: text)
+        self.showLabels(text: text)
         self.didReturn()
         return true
     }
@@ -185,26 +190,51 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     }
     
     // MARK: - show UILabel
+
+    public func showLabel() {
+        guard let text: String = textField.text else { return }
+        self.showLabels(text: text)
+    }
     
-    private func showLabel(text:String) {
+    private func showLabels(text:String) {
         
-        var showCurrentLength: Bool = false
-        var showErrorMessage: Bool = false
+        let showCurrentLength: Bool = self.showCurrentLengthLabel(text: text)
+        let showErrorMessage: Bool = self.showErrorMessageLabel(text: text)
         
-        if text.characters.count > self.maxTextCount {
-            showCurrentLength = true
-        } else if self.isMust && text.characters.count == 0 {
-            self.currentLengthLabel.textColor = .red
-            showCurrentLength = true
-        }
-        
-        if let pregError = self.pregError {
-            if !text.pregMatche(pattern: pregError.pattern) {
-                showErrorMessage = true
-            }
+        if showCurrentLength || showErrorMessage {
+            self.isValid = false
+        } else {
+            self.isValid = true
         }
         
         self.currentLengthLabel.isHidden = !showCurrentLength
         self.errorMessageLabel.isHidden = !showErrorMessage
+    }
+    
+    private func showCurrentLengthLabel(text: String) -> Bool {
+        
+        if self.maxTextCount != 0 && text.characters.count > self.maxTextCount {
+            return true
+        } else if !self.isOptional && text.characters.count == 0 {
+            self.currentLengthLabel.textColor = .red
+            return true
+        }
+        
+        return false
+    }
+    
+    private func showErrorMessageLabel(text: String) -> Bool {
+        
+        if self.isOptional && text.characters.count == 0 {
+            return false
+        }
+        
+        if let pregError = self.pregError {
+            if !text.pregMatche(pattern: pregError.pattern) {
+                return true
+            }
+        }
+        
+        return false
     }
 }

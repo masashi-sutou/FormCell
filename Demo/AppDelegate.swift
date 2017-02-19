@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-        let nav = UINavigationController.init(rootViewController: MSFormViewController())
+        let nav = UINavigationController.init(rootViewController: ViewController())
         self.window = UIWindow.init(frame: UIScreen.main.bounds)
         self.window?.rootViewController = nav
         self.window?.makeKeyAndVisible()

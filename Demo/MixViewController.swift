@@ -1,15 +1,15 @@
 //
-//  MSFormViewController.swift
+//  MixViewController.swift
 //  MSFormCell
 //
-//  Created by 須藤 将史 on 2017/02/19.
+//  Created by 須藤 将史 on 2017/02/20.
 //  Copyright © 2017年 masashi_sutou. All rights reserved.
 //
 
 import UIKit
 import MSFormCell
 
-struct User {
+private struct User {
     
     var name: String!
     var email: String!
@@ -22,14 +22,19 @@ struct User {
     }
 }
 
-class MSFormViewController: UITableViewController {
+private extension Selector {
+    static let saveButtonTapped = #selector(MixViewController.saveButtonTapped(_:))
+}
+
+final class MixViewController: MSFormTableViewController {
     
     private var user: User = User(name: "", email: "", tel: "")
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = "MSFormCell-Demo"
+        self.navigationItem.title = "Mix-Forms"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: .saveButtonTapped)
         self.tableView = UITableView.init(frame: self.view.frame, style: .grouped)
     }
     
@@ -75,7 +80,7 @@ class MSFormViewController: UITableViewController {
             return cell
             
         case 1:
-
+            
             let cell = MSFormCell(pregError: ("Invalid format mail address", "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"), textChanged: { (text) in
                 self.user.email = text
             }, didReturn: {
@@ -88,10 +93,10 @@ class MSFormViewController: UITableViewController {
             cell.textField.placeholder = "enter your email"
             cell.textField.text = self.user.email
             return cell
-
+            
         case 2:
             
-            let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), textChanged: { (text) in
+            let cell = MSFormCell(maxTextCount: 11, isOptional: true, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
@@ -103,7 +108,7 @@ class MSFormViewController: UITableViewController {
             cell.textField.placeholder = "enter your phone number"
             cell.textField.text = self.user.tel
             return cell
-
+            
         default:
             return UITableViewCell()
         }
@@ -111,5 +116,22 @@ class MSFormViewController: UITableViewController {
     
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.view.endEditing(true)
+    }
+    
+    func saveButtonTapped(_ sender: UIBarButtonItem) {
+
+        self.view.endEditing(true)
+
+        if let inValidCellIndexPath = self.inValidCellFirstIndexPath() {
+            let alert = UIAlertController(title: "Result", message: "error", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {(_) -> Void in
+                self.tableView.scrollToRow(at: inValidCellIndexPath, at: .top, animated: true)
+            }))
+            present(alert, animated: true, completion: nil)
+        } else {
+            let alert = UIAlertController(title: "Result", message: "save", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }
     }
 }
