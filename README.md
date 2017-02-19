@@ -15,18 +15,18 @@ Demo |
 ## Usage
 ```Swift
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-  let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number", "^[0-9]{10,11}$"), textChanged: { (text) in
-      self.user.tel = text
-  }, didReturn: {
-      if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
-          cell.textField.resignFirstResponder()
-      }
-  })
+    let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number", "^[0-9]{10,11}$"), textChanged: { (text) in
+        self.user.tel = text
+    }, didReturn: {
+        if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+            cell.textField.resignFirstResponder()
+        }
+    })
 
-  cell.textField.keyboardType = .numberPad
-  cell.textField.placeholder = "enter your phone number"
-  cell.textField.text = self.user.tel
-  return cell
+    cell.textField.keyboardType = .numberPad
+    cell.textField.placeholder = "enter your phone number"
+    cell.textField.text = self.user.tel
+    return cell
 }
 ```
 
