@@ -18,7 +18,9 @@ Demo |
 // Example: phone number in Japan
 
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), textChanged: { (text) in
+
+    let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), beginEditing: {
+    }, textChanged: { (text) in
         self.user.tel = text
     }, didReturn: {
         if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
@@ -30,23 +32,6 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
     cell.textField.placeholder = "enter your phone number"
     cell.textField.text = self.user.tel
     return cell
-}
-```
-
-```Swift
-
-// Example: when save action
-
-func saveButtonTapped(_ sender: UIBarButtonItem) {
-
-    self.view.endEditing(true)
-
-    // If call inValidCellFirstIndexPath, need to inherit MSFormTableViewController.
-    if let inValidCellIndexPath = self.inValidCellFirstIndexPath() {
-      // do something when has invalid cells.
-    } else {
-      // do something when has valid cells
-    }
 }
 ```
 

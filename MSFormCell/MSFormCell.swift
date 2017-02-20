@@ -26,30 +26,15 @@ private extension Selector {
 final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
 
     public var textField: UITextField!
-
-    // No error is true.
-    // When isOptional is ture, default is true.
-    public var isValid: Bool = false
- 
-    private var beginEditing: (() -> Void)?
+    
+    private var beginEditing: (() -> Void)!
     private var textChanged: ((String) -> Void)!
     private var didReturn: (() -> Void)!
-    
     private var maxTextCount: Int = 0
     private var isOptional: Bool = false
     private var currentLengthLabel: UILabel!
     private var errorMessageLabel: UILabel!
     private var pregError: (message: String, pattern: String)?
-
-    public init(maxTextCount: Int = 0, isOptional: Bool = false, pregError:(message: String, pattern: String)? = nil, textChanged: @escaping (String) -> Void, didReturn: @escaping () -> Void) {
-        
-        super.init(style: .default, reuseIdentifier: "MSFormCell")
-        self.beginEditing = nil
-        self.textChanged = textChanged
-        self.didReturn = didReturn
-        
-        self.setup(maxTextCount: maxTextCount, isOptional: isOptional, pregError: pregError)
-    }
     
     public init(maxTextCount: Int = 0, isOptional: Bool = false, pregError:(message: String, pattern: String)? = nil, beginEditing: @escaping () -> Void, textChanged: @escaping (String) -> Void, didReturn: @escaping () -> Void) {
 
@@ -69,7 +54,6 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
         self.maxTextCount = maxTextCount
         self.pregError = pregError
         self.isOptional = isOptional
-        self.isValid = isOptional
         
         self.textField = UITextField(frame: .zero)
         self.textField.clearButtonMode = .whileEditing
@@ -84,7 +68,7 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
         self.currentLengthLabel.isHidden = true
         self.currentLengthLabel.textAlignment = .right
         self.fix(currentTextLength: 0)
-        self.contentView.addSubview(self.currentLengthLabel)
+        self.textField.addSubview(self.currentLengthLabel)
         
         self.errorMessageLabel = UILabel(frame: .zero)
         if let pregError = pregError {
@@ -109,7 +93,7 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
         super.layoutSubviews()
         
         self.textField.frame = CGRect(x: self.layoutMargins.left, y: 0, width: self.contentView.frame.width - self.layoutMargins.left - self.layoutMargins.right - 5, height: self.contentView.frame.height)
-        self.currentLengthLabel.frame = CGRect(x: self.textField.frame.width - self.layoutMargins.left - self.layoutMargins.right, y: 2, width: 40, height: 12)
+        self.currentLengthLabel.frame = CGRect(x: self.textField.frame.width - 40, y: 2, width: 40, height: 12)
         self.errorMessageLabel.frame = CGRect(x: self.layoutMargins.left, y: self.contentView.frame.height - self.layoutMargins.bottom - 2, width: self.contentView.frame.width - self.layoutMargins.left - self.layoutMargins.right - 5, height: 12)
     }
     
@@ -117,8 +101,7 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         
-        guard let beginEditing = self.beginEditing else { return true }
-        beginEditing()
+        self.beginEditing()
         return true
     }
 
@@ -189,9 +172,10 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
         }
     }
     
-    // MARK: - show UILabel
+    // MARK: - show UILabels
 
-    public func showLabel() {
+    public func showLabels() {
+        
         guard let text: String = textField.text else { return }
         self.showLabels(text: text)
     }
@@ -200,12 +184,6 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
         
         let showCurrentLength: Bool = self.showCurrentLengthLabel(text: text)
         let showErrorMessage: Bool = self.showErrorMessageLabel(text: text)
-        
-        if showCurrentLength || showErrorMessage {
-            self.isValid = false
-        } else {
-            self.isValid = true
-        }
         
         self.currentLengthLabel.isHidden = !showCurrentLength
         self.errorMessageLabel.isHidden = !showErrorMessage

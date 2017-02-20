@@ -22,11 +22,7 @@ private struct User {
     }
 }
 
-private extension Selector {
-    static let saveButtonTapped = #selector(MandatoryViewController.saveButtonTapped(_:))
-}
-
-final class MandatoryViewController: MSFormTableViewController {
+final class MandatoryViewController: UITableViewController {
     
     private var user: User = User(name: "", email: "", tel: "")
     
@@ -34,7 +30,6 @@ final class MandatoryViewController: MSFormTableViewController {
         super.viewDidLoad()
         
         self.navigationItem.title = "All-Mandatory-Forms"
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: .saveButtonTapped)
         self.tableView = UITableView.init(frame: self.view.frame, style: .grouped)
     }
     
@@ -66,7 +61,8 @@ final class MandatoryViewController: MSFormTableViewController {
         switch indexPath.section {
         case 0:
             
-            let cell = MSFormCell(maxTextCount: 10, textChanged: { (text) in
+            let cell = MSFormCell(maxTextCount: 10, beginEditing: {
+            }, textChanged: { (text) in
                 self.user.name = text
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
@@ -81,7 +77,8 @@ final class MandatoryViewController: MSFormTableViewController {
             
         case 1:
 
-            let cell = MSFormCell(pregError: ("Invalid format mail address", "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"), textChanged: { (text) in
+            let cell = MSFormCell(pregError: ("Invalid format mail address", "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"), beginEditing: {
+            }, textChanged: { (text) in
                 self.user.email = text
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
@@ -96,7 +93,8 @@ final class MandatoryViewController: MSFormTableViewController {
 
         case 2:
             
-            let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), textChanged: { (text) in
+            let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), beginEditing: {
+            }, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
@@ -116,22 +114,5 @@ final class MandatoryViewController: MSFormTableViewController {
     
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.view.endEditing(true)
-    }
-    
-    func saveButtonTapped(_ sender: UIBarButtonItem) {
-        
-        self.view.endEditing(true)
-
-        if let inValidCellIndexPath = self.inValidCellFirstIndexPath() {
-            let alert = UIAlertController(title: "Result", message: "error", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {(_) -> Void in
-                self.tableView.scrollToRow(at: inValidCellIndexPath, at: .top, animated: true)
-            }))
-            present(alert, animated: true, completion: nil)
-        } else {
-            let alert = UIAlertController(title: "Result", message: "save", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
-        }
     }
 }

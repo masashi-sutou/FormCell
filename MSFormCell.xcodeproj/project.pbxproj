@@ -18,7 +18,6 @@
 		18B06B1E1E59F94E00A6E42B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B06B1D1E59F94E00A6E42B /* ViewController.swift */; };
 		18B06B201E59FD0E00A6E42B /* OptionalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B06B1F1E59FD0D00A6E42B /* OptionalViewController.swift */; };
 		18B06B221E59FEA700A6E42B /* MixViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B06B211E59FEA700A6E42B /* MixViewController.swift */; };
-		18B06B241E5A05B600A6E42B /* MSFormTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B06B231E5A05B600A6E42B /* MSFormTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +58,6 @@
 		18B06B1D1E59F94E00A6E42B /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		18B06B1F1E59FD0D00A6E42B /* OptionalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionalViewController.swift; sourceTree = "<group>"; };
 		18B06B211E59FEA700A6E42B /* MixViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MixViewController.swift; sourceTree = "<group>"; };
-		18B06B231E5A05B600A6E42B /* MSFormTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSFormTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,7 +102,6 @@
 			children = (
 				183915BA1E59560E00D9942A /* MSFormCell.h */,
 				183915D81E595EBA00D9942A /* MSFormCell.swift */,
-				18B06B231E5A05B600A6E42B /* MSFormTableViewController.swift */,
 				183915BB1E59560E00D9942A /* Info.plist */,
 			);
 			path = MSFormCell;
@@ -242,7 +239,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				183915D91E595EBA00D9942A /* MSFormCell.swift in Sources */,
-				18B06B241E5A05B600A6E42B /* MSFormTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
