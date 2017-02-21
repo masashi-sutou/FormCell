@@ -177,6 +177,7 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     public func showLabels() {
         
         guard let text: String = textField.text else { return }
+        self.fix(currentTextLength: text.characters.count)
         self.showLabels(text: text)
     }
     
