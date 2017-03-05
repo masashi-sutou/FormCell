@@ -61,10 +61,10 @@ final class MandatoryViewController: UITableViewController {
         switch indexPath.section {
         case 0:
             
-            let cell = MSFormCell(maxTextCount: 10, beginEditing: {
-            }, textChanged: { (text) in
+            let cell = MSFormCell(lengthError: (0, 10))
+            cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.name = text
-            }, didReturn: {
+            }, didReturn: { 
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
                     cell.textField.resignFirstResponder()
                 }
@@ -77,8 +77,8 @@ final class MandatoryViewController: UITableViewController {
             
         case 1:
 
-            let cell = MSFormCell(pregError: ("Invalid format mail address", "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"), beginEditing: {
-            }, textChanged: { (text) in
+            let cell = MSFormCell(pregError: (.email, nil))
+            cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.email = text
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
@@ -93,8 +93,8 @@ final class MandatoryViewController: UITableViewController {
 
         case 2:
             
-            let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), beginEditing: {
-            }, textChanged: { (text) in
+            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phoneHyphen, nil))
+            cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {

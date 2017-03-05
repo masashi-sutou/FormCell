@@ -8,14 +8,32 @@
 
 import UIKit
 
-private extension String {
+private enum LengthPattern: Int {
+    case none = 0
+    case min
+    case max
+    case range
     
-    func pregMatche(pattern: String, options: NSRegularExpression.Options = []) -> Bool {
-        guard let regex = try? NSRegularExpression(pattern: pattern, options: options) else {
-            return false
+    init(_ lengthError: (min: Int, max: Int)?) {
+        
+        guard let lengthError = lengthError else { self = .none; return }
+        
+        if lengthError.min > 0 && lengthError.max == 0 {
+            self = .min
+            return
         }
-        let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: self.characters.count))
-        return matches.count > 0
+        
+        if lengthError.min == 0 && lengthError.max > 0 {
+            self = .max
+            return
+        }
+        
+        if lengthError.min < lengthError.max {
+            self = .range
+            return
+        }
+        
+        self = .none
     }
 }
 
@@ -26,32 +44,41 @@ private extension Selector {
 final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
 
     public var textField: UITextField!
-    
-    private var beginEditing: (() -> Void)!
-    private var textChanged: ((String) -> Void)!
-    private var didReturn: (() -> Void)!
-    private var maxTextCount: Int = 0
+
+    private var lengthPattern: LengthPattern = .none
+    private var lengthError: (min: Int, max: Int)?
+    private var pregError: (pattern: PregMatchePattern, message: String?)?
     private var isOptional: Bool = false
+    
+    private var beginEditing: (() -> Void)?
+    private var textChanged: ((String) -> Void)?
+    private var didReturn: (() -> Void)?
+    
     private var currentLengthLabel: UILabel!
     private var errorMessageLabel: UILabel!
-    private var pregError: (message: String, pattern: String)?
     
-    public init(maxTextCount: Int = 0, isOptional: Bool = false, pregError:(message: String, pattern: String)? = nil, beginEditing: @escaping () -> Void, textChanged: @escaping (String) -> Void, didReturn: @escaping () -> Void) {
-
+    public init(lengthError: (Int, Int)? = nil, pregError:(PregMatchePattern, String?)? = nil, isOptional: Bool = false) {
+        
         super.init(style: .default, reuseIdentifier: "MSFormCell")
+
+        self.selectionStyle = .none
+        self.accessoryType = .none
+        self.accessoryView = nil
+
+        self.setup(lengthError: lengthError, pregError: pregError, isOptional: isOptional)
+    }
+    
+    public func editField(beginEditing: (() -> Void)?, textChanged: ((String) -> Void)?, didReturn: (() -> Void)?) {
+
         self.beginEditing = beginEditing
         self.textChanged = textChanged
         self.didReturn = didReturn
-        
-        self.setup(maxTextCount: maxTextCount, isOptional: isOptional, pregError: pregError)
     }
     
-    private func setup(maxTextCount: Int, isOptional: Bool, pregError:(message: String, pattern: String)?) {
+    private func setup(lengthError:(min: Int, max: Int)?, pregError:(pattern: PregMatchePattern, message: String?)?, isOptional: Bool) {
         
-        self.selectionStyle = .none
-        self.accessoryType = .none
-        
-        self.maxTextCount = maxTextCount
+        self.lengthPattern = LengthPattern(lengthError)
+        self.lengthError = lengthError
         self.pregError = pregError
         self.isOptional = isOptional
         
@@ -67,12 +94,15 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
         self.currentLengthLabel.numberOfLines = 1
         self.currentLengthLabel.isHidden = true
         self.currentLengthLabel.textAlignment = .right
-        self.fix(currentTextLength: 0)
         self.textField.addSubview(self.currentLengthLabel)
         
         self.errorMessageLabel = UILabel(frame: .zero)
         if let pregError = pregError {
-            self.errorMessageLabel.text = "・" + pregError.message
+            if let message = pregError.message {
+                self.errorMessageLabel.text = "・" + message
+            } else {
+                self.errorMessageLabel.text = "・" + pregError.pattern.errorMessage()
+            }
         }
         
         self.errorMessageLabel.numberOfLines = 1
@@ -93,28 +123,35 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
         super.layoutSubviews()
         
         self.textField.frame = CGRect(x: self.layoutMargins.left, y: 0, width: self.contentView.frame.width - self.layoutMargins.left - self.layoutMargins.right - 5, height: self.contentView.frame.height)
-        self.currentLengthLabel.frame = CGRect(x: self.textField.frame.width - 40, y: 2, width: 40, height: 12)
+        self.currentLengthLabel.frame = CGRect(x: self.textField.frame.width - 60, y: 2, width: 60, height: 12)
         self.errorMessageLabel.frame = CGRect(x: self.layoutMargins.left, y: self.contentView.frame.height - self.layoutMargins.bottom - 2, width: self.contentView.frame.width - self.layoutMargins.left - self.layoutMargins.right - 5, height: 12)
+        self.showLabels()
     }
     
     // MARK: - UITextFieldDelegate
     
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         
-        self.beginEditing()
+        if let beginEditing = self.beginEditing {
+            beginEditing()
+        }
         return true
     }
 
     public func textFieldDidBeginEditing(_ textField: UITextField) {
         
-        if self.maxTextCount > 0 {
+        defer {
+            if let count = textField.text?.characters.count {
+                self.fix(currentTextLength: count)
+            }
+        }
+        
+        guard let lengthError = self.lengthError else { return }
+        
+        if lengthError.min > 0 || lengthError.max > 0 {
             self.currentLengthLabel.isHidden = false
         } else {
             self.currentLengthLabel.isHidden = true
-        }
-        
-        if let count = textField.text?.characters.count {
-            self.fix(currentTextLength: count)
         }
     }
     
@@ -133,12 +170,19 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
         guard let text: String = textField.text else {
-            self.didReturn()
+            
+            if let didReturn = self.didReturn {
+                didReturn()
+            }
+            
             return true
         }
 
         self.showLabels(text: text)
-        self.didReturn()
+        if let didReturn = self.didReturn {
+            didReturn()
+        }
+        
         return true
     }
     
@@ -146,12 +190,12 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     
     func textFieldChanged(_ textField: UITextField) {
         
-        if let count = textField.text?.characters.count {
-            self.fix(currentTextLength: count)
-            
-            if let text = textField.text {
-                self.textChanged(text)
-            }
+        guard let text = textField.text else { return }
+        
+        self.fix(currentTextLength: text.characters.count )
+        
+        if let textChanged = self.textChanged {
+            textChanged(text)
         }
     }
     
@@ -159,16 +203,44 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     
     private func fix(currentTextLength: Int) {
         
-        if self.maxTextCount > 0 {
-            self.currentLengthLabel.text = String(format: "%d/%d", currentTextLength, self.maxTextCount)
+        guard let lengthError = self.lengthError else {
+            self.currentLengthLabel.isHidden = true
+            return
+        }
+        
+        switch self.lengthPattern {
+        case .none:
+            self.currentLengthLabel.isHidden = true
+
+        case .min:
+            self.currentLengthLabel.text = String(format: "%d/%d ~ ∞", currentTextLength, lengthError.max)
             
-            if currentTextLength > self.maxTextCount {
+            if currentTextLength < lengthError.min {
                 self.currentLengthLabel.textColor = .red
             } else {
                 self.currentLengthLabel.textColor = .lightGray
             }
-        } else {
-            self.currentLengthLabel.isHidden = true
+            self.currentLengthLabel.isHidden = false
+        
+        case .max:
+            self.currentLengthLabel.text = String(format: "%d/∞ ~ %d", currentTextLength, lengthError.max)
+            
+            if currentTextLength > lengthError.max {
+                self.currentLengthLabel.textColor = .red
+            } else {
+                self.currentLengthLabel.textColor = .lightGray
+            }
+            self.currentLengthLabel.isHidden = false
+        
+        case .range:
+            self.currentLengthLabel.text = String(format: "%d/%d ~ %d", currentTextLength, lengthError.min, lengthError.max)
+            
+            if lengthError.min...lengthError.max ~= currentTextLength {
+                self.currentLengthLabel.textColor = .red
+            } else {
+                self.currentLengthLabel.textColor = .lightGray
+            }
+            self.currentLengthLabel.isHidden = false
         }
     }
     
@@ -183,37 +255,53 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     
     private func showLabels(text:String) {
         
-        let showCurrentLength: Bool = self.showCurrentLengthLabel(text: text)
-        let showErrorMessage: Bool = self.showErrorMessageLabel(text: text)
-        
-        self.currentLengthLabel.isHidden = !showCurrentLength
-        self.errorMessageLabel.isHidden = !showErrorMessage
+        self.currentLengthLabel.isHidden = !self.showCurrentLengthLabel(text: text)
+        self.errorMessageLabel.isHidden = !self.showErrorMessageLabel(text: text)
     }
     
     private func showCurrentLengthLabel(text: String) -> Bool {
         
-        if self.maxTextCount != 0 && text.characters.count > self.maxTextCount {
-            return true
-        } else if !self.isOptional && text.characters.count == 0 {
-            self.currentLengthLabel.textColor = .red
-            return true
-        }
+        guard let lengthError = self.lengthError else { return false }
         
-        return false
+        let length: Int = text.characters.count
+        
+        switch self.lengthPattern {
+        case .none:
+            return false
+        case .min:
+            
+            if length == 0 && self.isOptional {
+                return false
+            } else {
+                return length < lengthError.min
+            }
+            
+        case .max:
+            
+            if length == 0 && self.isOptional {
+                return false
+            } else {
+                return length > lengthError.max
+            }
+            
+        case .range:
+            
+            if length == 0 && self.isOptional {
+                return false
+            } else {
+                return lengthError.min...lengthError.max ~= length
+            }
+        }
     }
     
     private func showErrorMessageLabel(text: String) -> Bool {
         
-        if self.isOptional && text.characters.count == 0 {
+        guard let pregError = self.pregError  else { return false }
+        
+        if text.characters.count == 0 && self.isOptional {
             return false
+        } else {
+            return !text.pregMatche(pattern: pregError.pattern)
         }
-        
-        if let pregError = self.pregError {
-            if !text.pregMatche(pattern: pregError.pattern) {
-                return true
-            }
-        }
-        
-        return false
     }
 }
