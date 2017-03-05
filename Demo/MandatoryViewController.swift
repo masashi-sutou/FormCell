@@ -93,7 +93,7 @@ final class MandatoryViewController: UITableViewController {
 
         case 2:
             
-            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phoneHyphen, nil))
+            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phone, nil))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {

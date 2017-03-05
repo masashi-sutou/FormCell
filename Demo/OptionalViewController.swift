@@ -93,7 +93,7 @@ final class OptionalViewController: UITableViewController {
             
         case 2:
             
-            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phoneHyphen, nil), isOptional: true)
+            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phone, nil), isOptional: true)
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: { 

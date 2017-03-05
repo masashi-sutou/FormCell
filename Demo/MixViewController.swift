@@ -93,7 +93,7 @@ final class MixViewController: UITableViewController {
             
         case 2:
             
-            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phoneHyphen, "Invalid format phone number in Japan"))
+            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phone, "Invalid format phone number in Japan"))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {
