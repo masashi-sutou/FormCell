@@ -19,8 +19,8 @@ Demo |
 
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-    let cell = MSFormCell(maxTextCount: 11, pregError: ("Invalid format phone number in Japan", "^[0-9]{10,11}$"), beginEditing: {
-    }, textChanged: { (text) in
+    let cell = MSFormCell(lengthError: (0, 11), pregError: (.phone, nil))
+    cell.editField(beginEditing: nil, textChanged: { (text) in
         self.user.tel = text
     }, didReturn: {
         if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
