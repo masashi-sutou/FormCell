@@ -1,16 +1,16 @@
-MSFormCell
+FormCell
 ====
 
 ## Overview
 
 Demo |
 --- |
-<img src="https://raw.githubusercontent.com/masashi-sutou/MSFormCell/master/demo_images/demo.jpg" width="320"/> |
+<img src="https://raw.githubusercontent.com/masashi-sutou/FormCell/master/demo_images/demo.jpg" width="320"/> |
 
 ## Requirement
 - Xcode 8
 - Swift 3
-- iOS 8.0 or later
+- iOS 9.0 or later
 
 ## Usage
 ```Swift
@@ -19,11 +19,11 @@ Demo |
 
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-    let cell = MSFormCell(lengthError: (0, 11), pregError: (.phone, nil))
+    let cell = FormCell(lengthError: (0, 11), pregError: (.phone, nil))
     cell.editField(beginEditing: nil, textChanged: { (text) in
         self.user.tel = text
     }, didReturn: {
-        if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+        if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
             cell.textField.resignFirstResponder()
         }
     })
@@ -42,15 +42,15 @@ Add the following line to your Podfile:
 use_frameworks!
 
 target 'YOUR_TARGET_NAME' do
-  pod "MSFormCell"
+  pod "FormCell"
 end
 ```
 
 #### [Carthage](https://github.com/Carthage/Carthage)
 Add the following line to your Cartfile:
 ```ruby
-github "masashi-sutou/MSFormCell"
+github "masashi-sutou/FormCell"
 ```
 
 ## Licence
-MSFormCell is available under the MIT license. See the LICENSE file for more info.
+FormCell is available under the MIT license. See the LICENSE file for more info.

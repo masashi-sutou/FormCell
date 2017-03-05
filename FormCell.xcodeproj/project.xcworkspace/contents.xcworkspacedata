@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:MSFormCell.xcodeproj">
+      location = "self:/Users/apple/OSS_iOS/MSFormCell/FormCell.xcodeproj">
    </FileRef>
 </Workspace>

@@ -1,13 +1,13 @@
 //
 //  OptionalViewController.swift
-//  MSFormCell
+//  FormCell
 //
 //  Created by 須藤 将史 on 2017/02/20.
 //  Copyright © 2017年 masashi_sutou. All rights reserved.
 //
 
 import UIKit
-import MSFormCell
+import FormCell
 
 private struct User {
     
@@ -61,11 +61,11 @@ final class OptionalViewController: UITableViewController {
         switch indexPath.section {
         case 0:
             
-            let cell = MSFormCell(lengthError: (0, 10), isOptional: true)
+            let cell = FormCell(lengthError: (0, 10), isOptional: true)
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.name = text
             }, didReturn: { 
-                if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
                     cell.textField.resignFirstResponder()
                 }
             })
@@ -77,11 +77,11 @@ final class OptionalViewController: UITableViewController {
             
         case 1:
             
-            let cell = MSFormCell(pregError: (.email, nil), isOptional: true)
+            let cell = FormCell(pregError: (.email, nil), isOptional: true)
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.email = text
             }, didReturn: {
-                if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
                     cell.textField.resignFirstResponder()
                 }
             })
@@ -93,11 +93,11 @@ final class OptionalViewController: UITableViewController {
             
         case 2:
             
-            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phone, nil), isOptional: true)
+            let cell = FormCell(lengthError: (0, 11), pregError: (.phone, nil), isOptional: true)
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: { 
-                if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
                     cell.textField.resignFirstResponder()
                 }
             })

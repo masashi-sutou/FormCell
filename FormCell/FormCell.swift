@@ -1,6 +1,6 @@
 //
-//  MSFormCell.swift
-//  MSFormCell
+//  FormCell.swift
+//  FormCell
 //
 //  Created by 須藤 将史 on 2017/02/19.
 //  Copyright © 2017年 masashi_sutou. All rights reserved.
@@ -38,10 +38,10 @@ private enum LengthPattern: Int {
 }
 
 private extension Selector {
-    static let textFieldChanged = #selector(MSFormCell.textFieldChanged(_:))
+    static let textFieldChanged = #selector(FormCell.textFieldChanged(_:))
 }
 
-final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
+final public class FormCell: UITableViewCell, UITextFieldDelegate {
 
     public var textField: UITextField!
 
@@ -59,7 +59,7 @@ final public class MSFormCell: UITableViewCell, UITextFieldDelegate {
     
     public init(lengthError: (Int, Int)? = nil, pregError:(PregMatchePattern, String?)? = nil, isOptional: Bool = false) {
         
-        super.init(style: .default, reuseIdentifier: "MSFormCell")
+        super.init(style: .default, reuseIdentifier: "FormCell")
 
         self.selectionStyle = .none
         self.accessoryType = .none

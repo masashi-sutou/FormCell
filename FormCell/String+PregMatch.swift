@@ -1,6 +1,6 @@
 //
 //  String+PregMatch.swift
-//  MSFormCell
+//  FormCell
 //
 //  Created by 須藤 将史 on 2017/03/05.
 //  Copyright © 2017年 masashi_sutou. All rights reserved.

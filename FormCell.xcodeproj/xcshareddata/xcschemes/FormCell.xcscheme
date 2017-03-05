@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "183915B61E59560E00D9942A"
-               BuildableName = "MSFormCell.framework"
-               BlueprintName = "MSFormCell"
-               ReferencedContainer = "container:MSFormCell.xcodeproj">
+               BuildableName = "FormCell.framework"
+               BlueprintName = "FormCell"
+               ReferencedContainer = "container:FormCell.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "183915B61E59560E00D9942A"
-            BuildableName = "MSFormCell.framework"
-            BlueprintName = "MSFormCell"
-            ReferencedContainer = "container:MSFormCell.xcodeproj">
+            BuildableName = "FormCell.framework"
+            BlueprintName = "FormCell"
+            ReferencedContainer = "container:FormCell.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -64,9 +64,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "183915B61E59560E00D9942A"
-            BuildableName = "MSFormCell.framework"
-            BlueprintName = "MSFormCell"
-            ReferencedContainer = "container:MSFormCell.xcodeproj">
+            BuildableName = "FormCell.framework"
+            BlueprintName = "FormCell"
+            ReferencedContainer = "container:FormCell.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

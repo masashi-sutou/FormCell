@@ -1,13 +1,13 @@
 //
 //  MixViewController.swift
-//  MSFormCell
+//  FormCell
 //
 //  Created by 須藤 将史 on 2017/02/20.
 //  Copyright © 2017年 masashi_sutou. All rights reserved.
 //
 
 import UIKit
-import MSFormCell
+import FormCell
 
 private struct User {
     
@@ -61,11 +61,11 @@ final class MixViewController: UITableViewController {
         switch indexPath.section {
         case 0:
             
-            let cell = MSFormCell(lengthError: (0, 10))
+            let cell = FormCell(lengthError: (0, 10))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.name = text
             }, didReturn: {
-                if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
                     cell.textField.resignFirstResponder()
                 }
             })
@@ -77,11 +77,11 @@ final class MixViewController: UITableViewController {
             
         case 1:
             
-            let cell = MSFormCell(pregError: (.email, nil))
+            let cell = FormCell(pregError: (.email, nil))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.email = text
             }, didReturn: { 
-                if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
                     cell.textField.resignFirstResponder()
                 }
             })
@@ -93,11 +93,11 @@ final class MixViewController: UITableViewController {
             
         case 2:
             
-            let cell = MSFormCell(lengthError: (0, 11), pregError: (.phone, "Invalid format phone number in Japan"))
+            let cell = FormCell(lengthError: (0, 11), pregError: (.phone, "Invalid format phone number in Japan"))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {
-                if let cell = tableView.cellForRow(at: indexPath) as? MSFormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
                     cell.textField.resignFirstResponder()
                 }
             })
