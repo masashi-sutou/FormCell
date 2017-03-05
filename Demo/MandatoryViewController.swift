@@ -33,6 +33,8 @@ final class MandatoryViewController: UITableViewController {
         self.tableView = UITableView.init(frame: self.view.frame, style: .grouped)
     }
     
+    // MARK: - UITableViewDelegate, UITableViewDataSource
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
@@ -61,11 +63,11 @@ final class MandatoryViewController: UITableViewController {
         switch indexPath.section {
         case 0:
             
-            let cell = FormCell(lengthError: (0, 10))
+            let cell = FormFieldCell(lengthError: (3, 0))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.name = text
             }, didReturn: { 
-                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
                 }
             })
@@ -77,11 +79,11 @@ final class MandatoryViewController: UITableViewController {
             
         case 1:
 
-            let cell = FormCell(pregError: (.email, nil))
+            let cell = FormFieldCell(pregError: (.email, nil))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.email = text
             }, didReturn: {
-                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
                 }
             })
@@ -93,11 +95,11 @@ final class MandatoryViewController: UITableViewController {
 
         case 2:
             
-            let cell = FormCell(lengthError: (0, 11), pregError: (.phone, nil))
+            let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, nil))
             cell.editField(beginEditing: nil, textChanged: { (text) in
                 self.user.tel = text
             }, didReturn: {
-                if let cell = tableView.cellForRow(at: indexPath) as? FormCell {
+                if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
                 }
             })

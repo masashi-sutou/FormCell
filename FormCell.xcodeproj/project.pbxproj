@@ -11,7 +11,7 @@
 		183915C91E59563500D9942A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183915C81E59563500D9942A /* AppDelegate.swift */; };
 		183915D01E59563500D9942A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 183915CF1E59563500D9942A /* Assets.xcassets */; };
 		183915D31E59563500D9942A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 183915D11E59563500D9942A /* LaunchScreen.storyboard */; };
-		183915D91E595EBA00D9942A /* FormCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183915D81E595EBA00D9942A /* FormCell.swift */; };
+		183915D91E595EBA00D9942A /* FormFieldCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183915D81E595EBA00D9942A /* FormFieldCell.swift */; };
 		183915DB1E5970D200D9942A /* MandatoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183915DA1E5970D200D9942A /* MandatoryViewController.swift */; };
 		183915DC1E5970EA00D9942A /* FormCell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 183915B71E59560E00D9942A /* FormCell.framework */; };
 		183915DD1E5970EA00D9942A /* FormCell.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 183915B71E59560E00D9942A /* FormCell.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -54,7 +54,7 @@
 		183915CF1E59563500D9942A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		183915D21E59563500D9942A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		183915D41E59563500D9942A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		183915D81E595EBA00D9942A /* FormCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormCell.swift; sourceTree = "<group>"; };
+		183915D81E595EBA00D9942A /* FormFieldCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormFieldCell.swift; sourceTree = "<group>"; };
 		183915DA1E5970D200D9942A /* MandatoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MandatoryViewController.swift; sourceTree = "<group>"; };
 		18B06B1D1E59F94E00A6E42B /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		18B06B1F1E59FD0D00A6E42B /* OptionalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionalViewController.swift; sourceTree = "<group>"; };
@@ -104,7 +104,7 @@
 			children = (
 				183915BA1E59560E00D9942A /* FormCell.h */,
 				18C7899E1E6C083B000DDB1B /* String+PregMatch.swift */,
-				183915D81E595EBA00D9942A /* FormCell.swift */,
+				183915D81E595EBA00D9942A /* FormFieldCell.swift */,
 				183915BB1E59560E00D9942A /* Info.plist */,
 			);
 			path = FormCell;
@@ -242,7 +242,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				18C7899F1E6C083B000DDB1B /* String+PregMatch.swift in Sources */,
-				183915D91E595EBA00D9942A /* FormCell.swift in Sources */,
+				183915D91E595EBA00D9942A /* FormFieldCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

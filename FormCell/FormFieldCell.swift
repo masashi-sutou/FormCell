@@ -1,6 +1,6 @@
 //
-//  FormCell.swift
-//  FormCell
+//  FormFieldCell.swift
+//  FormFieldCell
 //
 //  Created by 須藤 将史 on 2017/02/19.
 //  Copyright © 2017年 masashi_sutou. All rights reserved.
@@ -38,10 +38,10 @@ private enum LengthPattern: Int {
 }
 
 private extension Selector {
-    static let textFieldChanged = #selector(FormCell.textFieldChanged(_:))
+    static let textFieldChanged = #selector(FormFieldCell.textFieldChanged(_:))
 }
 
-final public class FormCell: UITableViewCell, UITextFieldDelegate {
+final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
 
     public var textField: UITextField!
 
@@ -59,7 +59,7 @@ final public class FormCell: UITableViewCell, UITextFieldDelegate {
     
     public init(lengthError: (Int, Int)? = nil, pregError:(PregMatchePattern, String?)? = nil, isOptional: Bool = false) {
         
-        super.init(style: .default, reuseIdentifier: "FormCell")
+        super.init(style: .default, reuseIdentifier: "FormFieldCell")
 
         self.selectionStyle = .none
         self.accessoryType = .none
@@ -123,7 +123,7 @@ final public class FormCell: UITableViewCell, UITextFieldDelegate {
         super.layoutSubviews()
         
         self.textField.frame = CGRect(x: self.layoutMargins.left, y: 0, width: self.contentView.frame.width - self.layoutMargins.left - self.layoutMargins.right - 5, height: self.contentView.frame.height)
-        self.currentLengthLabel.frame = CGRect(x: self.textField.frame.width - 60, y: 2, width: 60, height: 12)
+        self.currentLengthLabel.frame = CGRect(x: self.textField.frame.width - 100, y: 2, width: 100, height: 12)
         self.errorMessageLabel.frame = CGRect(x: self.layoutMargins.left, y: self.contentView.frame.height - self.layoutMargins.bottom - 2, width: self.contentView.frame.width - self.layoutMargins.left - self.layoutMargins.right - 5, height: 12)
         self.showLabels()
     }
@@ -213,7 +213,7 @@ final public class FormCell: UITableViewCell, UITextFieldDelegate {
             self.currentLengthLabel.isHidden = true
 
         case .min:
-            self.currentLengthLabel.text = String(format: "%d/%d ~ ∞", currentTextLength, lengthError.max)
+            self.currentLengthLabel.text = String(format: "%d min: %d", currentTextLength, lengthError.min)
             
             if currentTextLength < lengthError.min {
                 self.currentLengthLabel.textColor = .red
@@ -223,7 +223,7 @@ final public class FormCell: UITableViewCell, UITextFieldDelegate {
             self.currentLengthLabel.isHidden = false
         
         case .max:
-            self.currentLengthLabel.text = String(format: "%d/∞ ~ %d", currentTextLength, lengthError.max)
+            self.currentLengthLabel.text = String(format: "%d max: %d", currentTextLength, lengthError.max)
             
             if currentTextLength > lengthError.max {
                 self.currentLengthLabel.textColor = .red
@@ -233,12 +233,12 @@ final public class FormCell: UITableViewCell, UITextFieldDelegate {
             self.currentLengthLabel.isHidden = false
         
         case .range:
-            self.currentLengthLabel.text = String(format: "%d/%d ~ %d", currentTextLength, lengthError.min, lengthError.max)
+            self.currentLengthLabel.text = String(format: "%d min: %d, max: %d", currentTextLength, lengthError.min, lengthError.max)
             
             if lengthError.min...lengthError.max ~= currentTextLength {
-                self.currentLengthLabel.textColor = .red
-            } else {
                 self.currentLengthLabel.textColor = .lightGray
+            } else {
+                self.currentLengthLabel.textColor = .red
             }
             self.currentLengthLabel.isHidden = false
         }
@@ -289,7 +289,7 @@ final public class FormCell: UITableViewCell, UITextFieldDelegate {
             if length == 0 && self.isOptional {
                 return false
             } else {
-                return lengthError.min...lengthError.max ~= length
+                return !(lengthError.min...lengthError.max ~= length)
             }
         }
     }
