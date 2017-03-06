@@ -15,14 +15,22 @@ Demo |
 ## Usage
 ```Swift
 
-// Example: phone number in Japan
+// Example: - phone number in Japan
 
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
     let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, nil))
-    cell.editField(textChanged: { (text) in
+    cell.editField(textChanged: { (text, error) in
+
         self.user.tel = text
+        if error.result {
+            self.user.errorMessages[indexPath] = error.message
+        } else {
+            self.user.errorMessages.removeValue(forKey: indexPath)
+        }
+
     }, didReturn: {
+
         if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
             cell.textField.resignFirstResponder()
         }
@@ -33,6 +41,26 @@ override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexP
     cell.textField.text = self.user.tel
     return cell
 }
+
+// Example: - save action
+
+func saveTapped(_ sender: UIBarButtonItem) {
+
+    var message: String = ""
+    if self.user.errorMessages.isEmpty {
+
+        message = "success to save"
+
+    } else {
+
+        for (_, s) in self.user.errorMessages {
+            message += s + "\n"
+        }
+    }
+
+    self.showAlertDialog("Result", message: message, buttonTitle: "OK") {}
+}
+
 ```
 
 ## Installation

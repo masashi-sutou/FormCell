@@ -111,6 +111,7 @@ final class MandatoryViewController: UITableViewController {
             
             let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, nil))
             cell.editField(textChanged: { (text, error) in
+
                 self.user.tel = text
                 if error.result {
                     self.user.errorMessages[indexPath] = error.message
@@ -119,6 +120,7 @@ final class MandatoryViewController: UITableViewController {
                 }
 
             }, didReturn: {
+                
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
                 }
