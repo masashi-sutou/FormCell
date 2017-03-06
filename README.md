@@ -20,7 +20,7 @@ Demo |
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
     let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, nil))
-    cell.editField(beginEditing: nil, textChanged: { (text) in
+    cell.editField(textChanged: { (text) in
         self.user.tel = text
     }, didReturn: {
         if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
