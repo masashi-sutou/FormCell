@@ -9,6 +9,7 @@
 import Foundation
 
 public enum PregMatchePattern: String {
+    
     case kana = "^[ァ-ヾ]+$"
     case postal = "^\\d{7}$"
     case phone = "^\\d{10,11}$"
@@ -35,6 +36,7 @@ public enum PregMatchePattern: String {
 public extension String {
     
     func pregMatche(pattern: PregMatchePattern, options: NSRegularExpression.Options = []) -> Bool {
+        
         guard let regex = try? NSRegularExpression(pattern: pattern.rawValue, options: options) else {
             return false
         }

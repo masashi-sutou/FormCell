@@ -9,6 +9,17 @@
 
 import UIKit
 
+extension UIViewController {
+    func showAlertDialog(_ title: String, message: String, buttonTitle: String, okFunc: @escaping () -> ()) {
+        let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: buttonTitle, style: .default) { action in
+            okFunc()
+        }
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+    }
+}
+
 final class ViewController: UITableViewController {
     
     override func viewDidLoad() {

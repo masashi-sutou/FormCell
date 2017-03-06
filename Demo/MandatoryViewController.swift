@@ -14,6 +14,7 @@ private struct User {
     var name: String!
     var email: String!
     var tel: String!
+    var errorMessages: [IndexPath: String] = [:]
     
     init(name: String, email: String, tel: String) {
         self.name = name
@@ -31,6 +32,7 @@ final class MandatoryViewController: UITableViewController {
         
         self.navigationItem.title = "All-Mandatory-Forms"
         self.tableView = UITableView.init(frame: self.view.frame, style: .grouped)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(MandatoryViewController.saveTapped(_:)))
     }
     
     // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -64,8 +66,14 @@ final class MandatoryViewController: UITableViewController {
         case 0:
             
             let cell = FormFieldCell(lengthError: (3, 0))
-            cell.editField(beginEditing: nil, textChanged: { (text) in
+            cell.editField(textChanged: { (text, error) in
                 self.user.name = text
+                if error.result {
+                    self.user.errorMessages[indexPath] = error.message
+                } else {
+                    self.user.errorMessages.removeValue(forKey: indexPath)
+                }
+                
             }, didReturn: { 
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
@@ -80,8 +88,14 @@ final class MandatoryViewController: UITableViewController {
         case 1:
 
             let cell = FormFieldCell(pregError: (.email, nil))
-            cell.editField(beginEditing: nil, textChanged: { (text) in
+            cell.editField(textChanged: { (text, error) in
                 self.user.email = text
+                if error.result {
+                    self.user.errorMessages[indexPath] = error.message
+                } else {
+                    self.user.errorMessages.removeValue(forKey: indexPath)
+                }
+
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
@@ -96,8 +110,14 @@ final class MandatoryViewController: UITableViewController {
         case 2:
             
             let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, nil))
-            cell.editField(beginEditing: nil, textChanged: { (text) in
+            cell.editField(textChanged: { (text, error) in
                 self.user.tel = text
+                if error.result {
+                    self.user.errorMessages[indexPath] = error.message
+                } else {
+                    self.user.errorMessages.removeValue(forKey: indexPath)
+                }
+
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
@@ -116,5 +136,21 @@ final class MandatoryViewController: UITableViewController {
     
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.view.endEditing(true)
+    }
+    
+    func saveTapped(_ sender: UIBarButtonItem) {
+
+        var message: String = ""
+        if self.user.errorMessages.isEmpty {
+            message = "success to save"
+        } else {
+            
+            for (_, s) in self.user.errorMessages {
+                message += s + "\n"
+            }
+        }
+        
+        self.showAlertDialog("Result", message: message, buttonTitle: "OK") {
+        }
     }
 }

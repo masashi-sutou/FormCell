@@ -14,6 +14,7 @@ private struct User {
     var name: String!
     var email: String!
     var tel: String!
+    var errorMessages: [IndexPath: String] = [:]
     
     init(name: String, email: String, tel: String) {
         self.name = name
@@ -31,8 +32,9 @@ final class MixViewController: UITableViewController {
         
         self.navigationItem.title = "Mix-Forms"
         self.tableView = UITableView.init(frame: self.view.frame, style: .grouped)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(MixViewController.saveTapped(_:)))
     }
-        
+    
     // MARK: - UITableViewDelegate, UITableViewDataSource
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -64,8 +66,14 @@ final class MixViewController: UITableViewController {
         case 0:
             
             let cell = FormFieldCell(lengthError: (3, 10))
-            cell.editField(beginEditing: nil, textChanged: { (text) in
+            cell.editField(textChanged: { (text, error) in
                 self.user.name = text
+                if error.result {
+                    self.user.errorMessages[indexPath] = error.message
+                } else {
+                    self.user.errorMessages.removeValue(forKey: indexPath)
+                }
+                
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
@@ -80,9 +88,15 @@ final class MixViewController: UITableViewController {
         case 1:
             
             let cell = FormFieldCell(pregError: (.email, nil), isOptional: true)
-            cell.editField(beginEditing: nil, textChanged: { (text) in
+            cell.editField(textChanged: { (text, error) in
                 self.user.email = text
-            }, didReturn: { 
+                if error.result {
+                    self.user.errorMessages[indexPath] = error.message
+                } else {
+                    self.user.errorMessages.removeValue(forKey: indexPath)
+                }
+                
+            }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
                 }
@@ -96,8 +110,14 @@ final class MixViewController: UITableViewController {
         case 2:
             
             let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, "Invalid format phone number in Japan"))
-            cell.editField(beginEditing: nil, textChanged: { (text) in
+            cell.editField(textChanged: { (text, error) in
                 self.user.tel = text
+                if error.result {
+                    self.user.errorMessages[indexPath] = error.message
+                } else {
+                    self.user.errorMessages.removeValue(forKey: indexPath)
+                }
+ 
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                     cell.textField.resignFirstResponder()
@@ -116,5 +136,21 @@ final class MixViewController: UITableViewController {
     
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.view.endEditing(true)
-    }    
+    }
+    
+    func saveTapped(_ sender: UIBarButtonItem) {
+        
+        var message: String = ""
+        if self.user.errorMessages.isEmpty {
+            message = "success to save"
+        } else {
+            
+            for (_, s) in self.user.errorMessages {
+                message += s + "\n"
+            }
+        }
+        
+        self.showAlertDialog("Result", message: message, buttonTitle: "OK") {
+        }
+    }
 }

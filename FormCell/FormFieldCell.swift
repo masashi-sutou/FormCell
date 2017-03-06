@@ -8,11 +8,11 @@
 
 import UIKit
 
-private enum LengthPattern: Int {
-    case none = 0
-    case min
-    case max
-    case range
+private enum LengthPattern: String {
+    case none = ""
+    case min = "Please enter no less than %d letters"
+    case max = "Please enter no more than %d characters"
+    case range = "Please enter no less than %d characters and not more than %d characters"
     
     init(_ lengthError: (min: Int, max: Int)?) {
         
@@ -37,8 +37,9 @@ private enum LengthPattern: Int {
     }
 }
 
-private extension Selector {
-    static let textFieldChanged = #selector(FormFieldCell.textFieldChanged(_:))
+public struct ErrorResult {
+    public var result: Bool = false
+    public var message: String = ""
 }
 
 final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
@@ -51,31 +52,46 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
     private var isOptional: Bool = false
     
     private var beginEditing: (() -> Void)?
-    private var textChanged: ((String) -> Void)?
+    private var textChanged: ((_ text: String, _ error: ErrorResult) -> Void)?
     private var didReturn: (() -> Void)?
     
     private var currentLengthLabel: UILabel!
     private var errorMessageLabel: UILabel!
+
+    // MARK: - initialize
+    
+    public init(beginEditing: (() -> Void)? = nil, textChanged: ((_ text: String, _ error: ErrorResult) -> Void)? = nil, didReturn: (() -> Void)? = nil) {
+        
+        super.init(style: .default, reuseIdentifier: "FormFieldCell")
+        self.setup(lengthError: lengthError, pregError: pregError, isOptional: isOptional)
+    }
     
     public init(lengthError: (Int, Int)? = nil, pregError:(PregMatchePattern, String?)? = nil, isOptional: Bool = false) {
         
         super.init(style: .default, reuseIdentifier: "FormFieldCell")
-
-        self.selectionStyle = .none
-        self.accessoryType = .none
-        self.accessoryView = nil
-
         self.setup(lengthError: lengthError, pregError: pregError, isOptional: isOptional)
     }
     
-    public func editField(beginEditing: (() -> Void)?, textChanged: ((String) -> Void)?, didReturn: (() -> Void)?) {
+    // MARK: - callback
+    
+    public func editField(beginEditing: (() -> Void)? = nil, textChanged: ((_ text: String, _ error: ErrorResult) -> Void)? = nil, didReturn: (() -> Void)? = nil) {
 
         self.beginEditing = beginEditing
         self.textChanged = textChanged
         self.didReturn = didReturn
     }
     
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - UI Setting
+    
     private func setup(lengthError:(min: Int, max: Int)?, pregError:(pattern: PregMatchePattern, message: String?)?, isOptional: Bool) {
+        
+        self.selectionStyle = .none
+        self.accessoryType = .none
+        self.accessoryView = nil
         
         self.lengthPattern = LengthPattern(lengthError)
         self.lengthError = lengthError
@@ -85,7 +101,7 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
         self.textField = UITextField(frame: .zero)
         self.textField.clearButtonMode = .whileEditing
         self.textField.text = nil
-        self.textField.addTarget(self, action: .textFieldChanged, for: .editingChanged)
+        self.textField.addTarget(self, action: #selector(FormFieldCell.textFieldChanged(_:)), for: .editingChanged)
         self.textField.delegate = self
         self.contentView.addSubview(self.textField)
         
@@ -112,10 +128,6 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
         self.errorMessageLabel.isHidden = true
         self.errorMessageLabel.textAlignment = .left
         self.contentView.addSubview(self.errorMessageLabel)
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     override public func layoutSubviews() {
@@ -195,11 +207,42 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
         self.fix(currentTextLength: text.characters.count )
         
         if let textChanged = self.textChanged {
-            textChanged(text)
+            
+            if self.showCurrentLengthLabel(text: text) {
+                
+                guard let lengthError = self.lengthError else {
+                    textChanged(text, ErrorResult(result: true, message: "Length Error"))
+                    return
+                }
+
+                var error: ErrorResult
+                switch self.lengthPattern {
+                case .none:
+                    error = ErrorResult(result: true, message: "Length Error")
+                case .min:
+                    error = ErrorResult(result: true, message: String(format: self.lengthPattern.rawValue, lengthError.min))
+                case .max:
+                    error = ErrorResult(result: true, message: String(format: self.lengthPattern.rawValue, lengthError.max))
+                case .range:
+                    error = ErrorResult(result: true, message: String(format: self.lengthPattern.rawValue, lengthError.min, lengthError.max))
+                }
+                textChanged(text, error)
+                
+            } else if self.showErrorMessageLabel(text: text) {
+                
+                guard let pregError = self.pregError else {
+                    textChanged(text, ErrorResult(result: true, message: "Length Error"))
+                    return
+                }
+
+                textChanged(text, ErrorResult(result: true, message: pregError.pattern.errorMessage()))
+            } else {
+                textChanged(text, ErrorResult(result: false, message: ""))
+            }
         }
     }
     
-    // MARK: - text count
+    // MARK: - text length count
     
     private func fix(currentTextLength: Int) {
         
@@ -244,7 +287,7 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
         }
     }
     
-    // MARK: - show UILabels
+    // MARK: - show Labels
 
     public func showLabels() {
         
