@@ -81,12 +81,6 @@ final class MandatoryViewController: UITableViewController {
                         }
                     }
                     
-                    if error.result {
-                        self.user.errorMessages[indexPath] = error.message
-                    } else {
-                        self.user.errorMessages.removeValue(forKey: indexPath)
-                    }
-                    
                 }, didReturn: {
 
                     let nextRow: IndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
@@ -103,14 +97,10 @@ final class MandatoryViewController: UITableViewController {
             case 1:
                 
                 let cell = FormFieldCell(lengthError: (3, 0), pregError: (.kana, nil))
-                cell.editField(textChanged: { (text, error) in
+                cell.editField(textChanged: { (text, _) in
+                
                     self.user.nameKana = text
-                    if error.result {
-                        self.user.errorMessages[indexPath] = error.message
-                    } else {
-                        self.user.errorMessages.removeValue(forKey: indexPath)
-                    }
-                    
+
                 }, didReturn: {
                     if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
                         cell.textField.resignFirstResponder()
@@ -129,13 +119,9 @@ final class MandatoryViewController: UITableViewController {
         case 1:
 
             let cell = FormFieldCell(pregError: (.email, nil))
-            cell.editField(textChanged: { (text, error) in
+            cell.editField(textChanged: { (text, _) in
+
                 self.user.email = text
-                if error.result {
-                    self.user.errorMessages[indexPath] = error.message
-                } else {
-                    self.user.errorMessages.removeValue(forKey: indexPath)
-                }
 
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
@@ -151,14 +137,9 @@ final class MandatoryViewController: UITableViewController {
         case 2:
             
             let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, nil))
-            cell.editField(textChanged: { (text, error) in
+            cell.editField(textChanged: { (text, _) in
 
                 self.user.tel = text
-                if error.result {
-                    self.user.errorMessages[indexPath] = error.message
-                } else {
-                    self.user.errorMessages.removeValue(forKey: indexPath)
-                }
 
             }, didReturn: {
                 

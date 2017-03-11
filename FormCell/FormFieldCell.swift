@@ -9,6 +9,7 @@
 import UIKit
 
 private enum LengthPattern: String {
+
     case none = ""
     case min = "Please enter no less than %d letters"
     case max = "Please enter no more than %d characters"
@@ -37,11 +38,6 @@ private enum LengthPattern: String {
     }
 }
 
-public struct ErrorResult {
-    public var result: Bool = false
-    public var message: String = ""
-}
-
 final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
 
     public var textField: UITextField!
@@ -52,7 +48,7 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
     private var isOptional: Bool = false
     
     private var beginEditing: (() -> Void)?
-    private var textChanged: ((_ text: String, _ error: ErrorResult) -> Void)?
+    private var textChanged: ((_ text: String, _ errorMessage: String?) -> Void)?
     private var didReturn: (() -> Void)?
     
     private var currentLengthLabel: UILabel!
@@ -60,7 +56,7 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
 
     // MARK: - initialize
     
-    public init(beginEditing: (() -> Void)? = nil, textChanged: ((_ text: String, _ error: ErrorResult) -> Void)? = nil, didReturn: (() -> Void)? = nil) {
+    public init(beginEditing: (() -> Void)? = nil, textChanged: ((_ text: String, _ error: String?) -> Void)? = nil, didReturn: (() -> Void)? = nil) {
         
         super.init(style: .default, reuseIdentifier: "FormFieldCell")
         self.setup(lengthError: lengthError, pregError: pregError, isOptional: isOptional)
@@ -74,7 +70,7 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
     
     // MARK: - callback
     
-    public func editField(beginEditing: (() -> Void)? = nil, textChanged: ((_ text: String, _ error: ErrorResult) -> Void)? = nil, didReturn: (() -> Void)? = nil) {
+    public func editField(beginEditing: (() -> Void)? = nil, textChanged: ((_ text: String, _ error: String?) -> Void)? = nil, didReturn: (() -> Void)? = nil) {
 
         self.beginEditing = beginEditing
         self.textChanged = textChanged
@@ -211,33 +207,31 @@ final public class FormFieldCell: UITableViewCell, UITextFieldDelegate {
             if self.showCurrentLengthLabel(text: text) {
                 
                 guard let lengthError = self.lengthError else {
-                    textChanged(text, ErrorResult(result: true, message: "Length Error"))
+                    textChanged(text, "Length Error")
                     return
                 }
-
-                var error: ErrorResult
+                
                 switch self.lengthPattern {
                 case .none:
-                    error = ErrorResult(result: true, message: "Length Error")
+                    textChanged(text, "Length Error")
                 case .min:
-                    error = ErrorResult(result: true, message: String(format: self.lengthPattern.rawValue, lengthError.min))
+                    textChanged(text, String(format: self.lengthPattern.rawValue, lengthError.min))
                 case .max:
-                    error = ErrorResult(result: true, message: String(format: self.lengthPattern.rawValue, lengthError.max))
+                    textChanged(text, String(format: self.lengthPattern.rawValue, lengthError.max))
                 case .range:
-                    error = ErrorResult(result: true, message: String(format: self.lengthPattern.rawValue, lengthError.min, lengthError.max))
+                    textChanged(text, String(format: self.lengthPattern.rawValue, lengthError.min, lengthError.max))
                 }
-                textChanged(text, error)
                 
             } else if self.showErrorMessageLabel(text: text) {
                 
                 guard let pregError = self.pregError else {
-                    textChanged(text, ErrorResult(result: true, message: "Length Error"))
+                    textChanged(text, "Length Error")
                     return
                 }
 
-                textChanged(text, ErrorResult(result: true, message: pregError.pattern.errorMessage()))
+                textChanged(text, pregError.pattern.errorMessage())
             } else {
-                textChanged(text, ErrorResult(result: false, message: ""))
+                textChanged(text, nil)
             }
         }
     }

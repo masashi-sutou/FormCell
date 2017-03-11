@@ -66,13 +66,8 @@ final class MixViewController: UITableViewController {
         case 0:
             
             let cell = FormFieldCell(lengthError: (3, 10))
-            cell.editField(textChanged: { (text, error) in
+            cell.editField(textChanged: { (text, _) in
                 self.user.name = text
-                if error.result {
-                    self.user.errorMessages[indexPath] = error.message
-                } else {
-                    self.user.errorMessages.removeValue(forKey: indexPath)
-                }
                 
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
@@ -88,13 +83,8 @@ final class MixViewController: UITableViewController {
         case 1:
             
             let cell = FormFieldCell(pregError: (.email, nil), isOptional: true)
-            cell.editField(textChanged: { (text, error) in
+            cell.editField(textChanged: { (text, _) in
                 self.user.email = text
-                if error.result {
-                    self.user.errorMessages[indexPath] = error.message
-                } else {
-                    self.user.errorMessages.removeValue(forKey: indexPath)
-                }
                 
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
@@ -110,13 +100,8 @@ final class MixViewController: UITableViewController {
         case 2:
             
             let cell = FormFieldCell(lengthError: (0, 11), pregError: (.phone, "Invalid format phone number in Japan"))
-            cell.editField(textChanged: { (text, error) in
+            cell.editField(textChanged: { (text, _) in
                 self.user.tel = text
-                if error.result {
-                    self.user.errorMessages[indexPath] = error.message
-                } else {
-                    self.user.errorMessages.removeValue(forKey: indexPath)
-                }
  
             }, didReturn: {
                 if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
