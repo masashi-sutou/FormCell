@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = "FormCell"
-  s.version               = "1.2.2"
+  s.version               = "1.3.0"
   s.summary               = "FormCell is customized UITableViewCell for entry form."
   s.homepage              = "https://github.com/masashi-sutou/FormCell"
   s.license               = { :type => "MIT", :file => "LICENSE" }

@@ -11,21 +11,16 @@ import FormCell
 
 private struct User {
     
-    var name: String!
-    var email: String!
-    var tel: String!
+    var name: String?
+    var nameKana: String?
+    var email: String?
+    var tel: String?
     var errorMessages: [IndexPath: String] = [:]
-    
-    init(name: String, email: String, tel: String) {
-        self.name = name
-        self.email = email
-        self.tel = tel
-    }
 }
 
 final class MandatoryViewController: UITableViewController {
     
-    private var user: User = User(name: "", email: "", tel: "")
+    private var user: User = User()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,7 +52,13 @@ final class MandatoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        
+        switch section {
+        case 0:
+            return 2
+        default:
+            return 1
+        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -65,25 +66,65 @@ final class MandatoryViewController: UITableViewController {
         switch indexPath.section {
         case 0:
             
-            let cell = FormFieldCell(lengthError: (3, 0))
-            cell.editField(textChanged: { (text, error) in
-                self.user.name = text
-                if error.result {
-                    self.user.errorMessages[indexPath] = error.message
-                } else {
-                    self.user.errorMessages.removeValue(forKey: indexPath)
-                }
+            switch indexPath.row {
+            case 0:
+
+                let cell = FormFieldCell(lengthError: (3, 0))
+                cell.editField(textChanged: { (text, error) in
+                    self.user.name = text
+
+                    if let cell: FormFieldCell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
+                        if cell.textField.markedTextRange == nil {
+                            self.user.nameKana = self.user.name?.katakanaFurigana()
+                            let nameKanaIndex: IndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
+                            tableView.reloadRows(at: [nameKanaIndex], with: .none)
+                        }
+                    }
+                    
+                    if error.result {
+                        self.user.errorMessages[indexPath] = error.message
+                    } else {
+                        self.user.errorMessages.removeValue(forKey: indexPath)
+                    }
+                    
+                }, didReturn: {
+
+                    let nextRow: IndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
+                    if let cell: FormFieldCell = tableView.cellForRow(at: nextRow) as? FormFieldCell {
+                        cell.textField.becomeFirstResponder()
+                    }
+                })
                 
-            }, didReturn: { 
-                if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
-                    cell.textField.resignFirstResponder()
-                }
-            })
-            
-            cell.textField.keyboardType = .default
-            cell.textField.placeholder = "enter your name"
-            cell.textField.text = self.user.name
-            return cell
+                cell.textField.keyboardType = .default
+                cell.textField.placeholder = "enter your name"
+                cell.textField.text = self.user.name
+                return cell
+
+            case 1:
+                
+                let cell = FormFieldCell(lengthError: (3, 0), pregError: (.kana, nil))
+                cell.editField(textChanged: { (text, error) in
+                    self.user.nameKana = text
+                    if error.result {
+                        self.user.errorMessages[indexPath] = error.message
+                    } else {
+                        self.user.errorMessages.removeValue(forKey: indexPath)
+                    }
+                    
+                }, didReturn: {
+                    if let cell = tableView.cellForRow(at: indexPath) as? FormFieldCell {
+                        cell.textField.resignFirstResponder()
+                    }
+                })
+                
+                cell.textField.keyboardType = .default
+                cell.textField.placeholder = "enter your name kana"
+                cell.textField.text = self.user.nameKana
+                return cell
+
+            default:
+                return UITableViewCell()
+            }
             
         case 1:
 
